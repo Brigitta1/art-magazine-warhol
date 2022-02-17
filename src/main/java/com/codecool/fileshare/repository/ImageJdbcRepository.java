@@ -1,6 +1,5 @@
 package com.codecool.fileshare.repository;
 
-import com.codecool.fileshare.entity.Image;
 import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
 import org.springframework.stereotype.Component;
 
@@ -8,12 +7,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -27,9 +24,7 @@ public class ImageJdbcRepository implements ImageRepository{
     public String storeImage(String category, String content) {
         uuid = UUID.nameUUIDFromBytes(content.getBytes());
         String id = uuid.toString();
-        System.out.println(id);
-        String delims = "[,]";
-        String[] parts = content.split(delims);
+        String[] parts = content.split(",");
         String imageString = parts[1];
         byte[] imageByteArray = Base64.decode(imageString);
 
@@ -67,8 +62,6 @@ public class ImageJdbcRepository implements ImageRepository{
     public String readImage(String uuid) {
         UUID uuid1 = UUID.fromString(uuid);
         String query = "SELECT content FROM image WHERE id = ?";
-        byte[] arr = new byte[1];
-        arr = Base64.encode(arr);
         String result = null;
         try (Connection connection = db.getDataSource().getConnection()) {
             PreparedStatement ps = connection.prepareStatement(query);
