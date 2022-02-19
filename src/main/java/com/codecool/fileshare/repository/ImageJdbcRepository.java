@@ -3,10 +3,6 @@ package com.codecool.fileshare.repository;
 import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,24 +24,17 @@ public class ImageJdbcRepository implements ImageRepository{
         String imageString = parts[1];
         byte[] imageByteArray = Base64.decode(imageString);
 
-        InputStream is = new ByteArrayInputStream(imageByteArray);
-        String mimeType = null;
-        String fileExtension = null;
-        try {
-            mimeType = URLConnection.guessContentTypeFromStream(is);
-            String delimiter="[/]";
-            String[] tokens = mimeType.split(delimiter);
-            fileExtension = tokens[1];
-        } catch (IOException ioException){
-            ioException.printStackTrace();
-        }
+        int a = content.indexOf("/");
+        int b = content.indexOf(";");
+        String extension = content.substring(a+1, b);
+
         String query = "INSERT INTO image VALUES(?, ?, ?, ?)";
         try (Connection connection = db.getDataSource().getConnection()){
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setObject(1, uuid);
             ps.setString(2, category);
             ps.setBytes(3, imageByteArray);
-            ps.setString(4, fileExtension);
+            ps.setString(4, extension);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,7 +51,7 @@ public class ImageJdbcRepository implements ImageRepository{
     public String readImage(String uuid) {
         UUID uuid1 = UUID.fromString(uuid);
         String query = "SELECT content FROM image WHERE id = ?";
-        String result = null;
+        String result = "Wrong uuid!";
         try (Connection connection = db.getDataSource().getConnection()) {
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setObject(1, uuid1);

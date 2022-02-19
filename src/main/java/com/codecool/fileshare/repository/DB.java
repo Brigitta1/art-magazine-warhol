@@ -8,9 +8,14 @@ public class DB {
     public PGSimpleDataSource getDataSource() throws SQLException {
         PGSimpleDataSource ds = new PGSimpleDataSource();
 
-        ds.setDatabaseName(System.getenv().get("DB_NAME"));
-        ds.setUser(System.getenv().get("DB_USERNAME"));
-        ds.setPassword(System.getenv().get("DB_PASSWORD"));
+//        ds.setServerNames(new String[]{"3.125.49.36"});
+//        ds.setDatabaseName("postgres");
+//        ds.setUser("user");
+//        ds.setPassword("USER123");
+
+        ds.setDatabaseName("warhol");
+        ds.setUser("postgres");
+        ds.setPassword("admin");
 
         ds.getConnection().close();
         return ds;
